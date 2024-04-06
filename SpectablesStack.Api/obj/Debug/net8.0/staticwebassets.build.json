@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "x2XYM35EZCTU8y3XGS2shK8ccZaJTJhYdPafG3LOoiA=",
+  "Source": "SpectablesStack.Api",
+  "BasePath": "_content/SpectablesStack.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
