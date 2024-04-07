@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pCQ384/cEw9b3P4AUY2EhXj6gm41xgsd+or1mkXCvqBuJNySmPP8LcGMvfu/MdYtId1v2ujuiXCTXSk1CPbbXw==",
+  "dgSpecHash": "ZKscPPjxkThOhjr6IVLtfvhKmCbAIj28saAwXptltHMv3IRFz2oNPshHuum0BB5jxkGqgMPbwvVJS2FRWLVpHQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Wandi\\server-api\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
+  "projectFilePath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\bbdnet2625\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\bbdnet2625\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.3\\microsoft.aspnetcore.openapi.8.0.3.nupkg.sha512",
