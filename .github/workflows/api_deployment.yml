@@ -58,6 +58,8 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     environment: production
+    env:
+      IMAGE_TAG: ${{ github.sha }}
     # needs: deploy
 
     steps:
@@ -87,7 +89,6 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
@@ -100,7 +101,6 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
         CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
