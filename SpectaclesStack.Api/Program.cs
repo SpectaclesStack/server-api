@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 var serverName = Environment.GetEnvironmentVariable("SERVER_NAME")?.ToString().Remove(0,2);
 var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME")?.ToString().Remove(0,2);
 var username = Environment.GetEnvironmentVariable("USERNAME")?.ToString().Remove(0,2);
-var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString().Remove(0,2);
+var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString().Remove(0, 2);
 
 var connectionString = "Server="+serverName+";Port=5432;Database="+databaseName+";Username="+username+";Password="+password+";";
 
