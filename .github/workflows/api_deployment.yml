@@ -63,12 +63,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Set IP env variable
-      run: |
-        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
-        echo "::add-mask::$EC2_IP"
-        echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
-
     - name: Configure AWS credentials from AWS account
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -76,6 +70,12 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         role-session-name: Github-OIDC-TERRAFORM
         audience: sts.amazonaws.com
+        
+    - name: Set IP env variable
+      run: |
+        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
+        echo "::add-mask::$EC2_IP"
+        echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
 
     #- name: Login to Amazon ECR
     #  id: login-ecr
