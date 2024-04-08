@@ -56,7 +56,7 @@ jobs:
       - name: Host IP Address
         id: set-ip
         run: |
-          echo "::set-output name=instance_public_ip::$( steps.plan.output.ec2_public_ip )" >> $GITHUB_ENV
+          echo "::set-env name=SERVER_PUBLIC_IP::$(terraform output -raw ec2_public_ip)"
 
   build-docker-image:
     name: Build and Push Docker Image
@@ -69,7 +69,8 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set IP env variable
-      run: echo SERVER_PUBLIC_IP=${{ needs.deploy.outputs.ec2_public_ip }} >> $GITHUB_ENV
+      run: |
+        echo "Server Public IP: $SERVER_PUBLIC_IP"
 
     - name: Configure AWS credentials from AWS account
       uses: aws-actions/configure-aws-credentials@v4
