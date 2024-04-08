@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj": {}
+    "D:\\Grad Programme Level Ups\\server-stuff\\SpectaclesStack.Api\\spectaclesStackServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj": {
+    "D:\\Grad Programme Level Ups\\server-stuff\\SpectaclesStack.Api\\spectaclesStackServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
+        "projectUniqueName": "D:\\Grad Programme Level Ups\\server-stuff\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
         "projectName": "spectaclesStackServer",
-        "projectPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
-        "packagesPath": "C:\\Users\\bbdnet2625\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\obj\\",
+        "projectPath": "D:\\Grad Programme Level Ups\\server-stuff\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
+        "packagesPath": "C:\\Users\\bbdnet2520\\.nuget\\packages\\",
+        "outputPath": "D:\\Grad Programme Level Ups\\server-stuff\\SpectaclesStack.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\bbdnet2625\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\bbdnet2520\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

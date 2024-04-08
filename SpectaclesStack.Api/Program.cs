@@ -4,26 +4,20 @@ using spectaclesStackServer.Data;
 using spectaclesStackServer.Interface;
 using spectaclesStackServer.Repository;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//var configuration = builder.Configuration;
+var serverName = Environment.GetEnvironmentVariable("SERVER_NAME")?.ToString().Remove(0,2);
+var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME")?.ToString().Remove(0,2);
+var username = Environment.GetEnvironmentVariable("USERNAME")?.ToString().Remove(0,2);
+var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString().Remove(0,2);
 
-// build connection string
-/*var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!
-    .Replace("{USERNAME}", username)
-    .Replace("{PASSWORD}", password)
-    .Replace("{SERVERNAME}", serverName)
-    .Replace("{DB_NAME}", databaseName);*/
-
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
+var connectionString = "Server="+serverName+";Port=5432;Database="+databaseName+";Username="+username+";Password="+password+";";
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
@@ -37,7 +31,6 @@ builder.Services.AddScoped<IQuestionsRepository, QuestionsRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
