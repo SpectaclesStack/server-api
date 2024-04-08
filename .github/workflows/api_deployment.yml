@@ -10,55 +10,55 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Build and Deploy Infrastructure
-    needs: migration
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - name: Git checkout 
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: Github-OIDC-TERRAFORM
-          audience: sts.amazonaws.com
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.6.6
-
-      - name: Terraform Init 
-        id: init
-        working-directory: ./terraform
-        run: terraform init 
-
-      - name: Terraform Validate
-        id: validate
-        working-directory: ./terraform
-        run: terraform validate
-
-      - name: Terraform Plan
-        id: plan
-        working-directory: ./terraform
-        run: terraform plan
-
-      - name: Terraform Apply
-        working-directory: ./terraform
-        run: terraform apply -auto-approve
+  #deploy:
+  #  name: Build and Deploy Infrastructure
+  #  needs: migration
+  #  runs-on: ubuntu-latest
+  #  defaults:
+  #    run:
+  #      shell: bash
+#
+  #  steps:
+  #    - name: Git checkout 
+  #      uses: actions/checkout@v3
+#
+  #    - name: Configure AWS credentials from AWS account
+  #      uses: aws-actions/configure-aws-credentials@v4
+  #      with:
+  #        role-to-assume: ${{ secrets.AWS_ROLE }}
+  #        aws-region: ${{ secrets.AWS_REGION }}
+  #        role-session-name: Github-OIDC-TERRAFORM
+  #        audience: sts.amazonaws.com
+#
+  #    - name: Setup Terraform
+  #      uses: hashicorp/setup-terraform@v2
+  #      with:
+  #        terraform_version: 1.6.6
+#
+  #    - name: Terraform Init 
+  #      id: init
+  #      working-directory: ./terraform
+  #      run: terraform init 
+#
+  #    - name: Terraform Validate
+  #      id: validate
+  #      working-directory: ./terraform
+  #      run: terraform validate
+#
+  #    - name: Terraform Plan
+  #      id: plan
+  #      working-directory: ./terraform
+  #      run: terraform plan
+#
+  #    - name: Terraform Apply
+  #      working-directory: ./terraform
+  #      run: terraform apply -auto-approve
 
   build-docker-image:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     environment: production
-    needs: deploy
+    # needs: deploy
 
     steps:
     - name: Checkout
@@ -116,20 +116,20 @@ jobs:
     #      sudo docker rm api_application || true
     #      sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     #      sudo docker run -d api_application -p 5033:8080
-  migration:
-   name: Run Flyway Migration
-   runs-on: ubuntu-latest
-  
-   steps:
-     - name: Checkout
-       uses: actions/checkout@v3.0.0
- 
-     - name: Run Live Flyway Migrations
-       uses: joshuaavalon/flyway-action@v3.0.0
-       with:
-         url: ${{ secrets.DB_URL }}
-         user: ${{ secrets.DB_USER }}
-         password: ${{ secrets.DB_PASSWORD }}
-         locations:  filesystem:./migrations
-       env:
-         FLYWAY_VALIDATE_MIGRATION_NAMING: true
+  #migration:
+  # name: Run Flyway Migration
+  # runs-on: ubuntu-latest
+  #
+  # steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3.0.0
+ #
+  #   - name: Run Live Flyway Migrations
+  #     uses: joshuaavalon/flyway-action@v3.0.0
+  #     with:
+  #       url: ${{ secrets.DB_URL }}
+  #       user: ${{ secrets.DB_USER }}
+  #       password: ${{ secrets.DB_PASSWORD }}
+  #       locations:  filesystem:./migrations
+  #     env:
+  #       FLYWAY_VALIDATE_MIGRATION_NAMING: true
