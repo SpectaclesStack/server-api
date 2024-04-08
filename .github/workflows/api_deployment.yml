@@ -12,6 +12,7 @@ permissions:
 jobs:
   deploy:
     name: Build and Deploy Infrastructure
+    needs: migration
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -70,7 +71,7 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         role-session-name: Github-OIDC-TERRAFORM
         audience: sts.amazonaws.com
-        
+
     - name: Set IP env variable
       run: |
         EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
@@ -115,3 +116,20 @@ jobs:
     #      sudo docker rm api_application || true
     #      sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     #      sudo docker run -d api_application -p 5033:8080
+  migration:
+   name: Run Flyway Migration
+   runs-on: ubuntu-latest
+  
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v3.0.0
+ 
+     - name: Run Live Flyway Migrations
+       uses: joshuaavalon/flyway-action@v3.0.0
+       with:
+         url: ${{ secrets.DB_URL }}
+         user: ${{ secrets.DB_USER }}
+         password: ${{ secrets.DB_PASSWORD }}
+         locations:  filesystem:./migrations
+       env:
+         FLYWAY_VALIDATE_MIGRATION_NAMING: true

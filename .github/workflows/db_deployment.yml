@@ -1,13 +1,13 @@
-name: Build and Release - DB
-on:
-  push:
-    #branches:
-      #- 'db/*'
-permissions:
-  id-token: write
-  contents: read
-
-jobs:
+# name: Build and Release - DB
+# on:
+#   push:
+#     #branches:
+#       #- 'db/*'
+# permissions:
+#   id-token: write
+#   contents: read
+# 
+# jobs:
   #deploy:
   #  name: Build and Deploy Database
   #  needs: migration
@@ -52,20 +52,20 @@ jobs:
   #      working-directory: ./terraform
   #      run: terraform apply -auto-approve
 
-  migration:
-    name: Run Flyway Migration
-    runs-on: ubuntu-latest
-   
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.0.0
-  
-      - name: Run Live Flyway Migrations
-        uses: joshuaavalon/flyway-action@v3.0.0
-        with:
-          url: ${{ secrets.DB_URL }}
-          user: ${{ secrets.DB_USER }}
-          password: ${{ secrets.DB_PASSWORD }}
-          locations:  filesystem:./migrations
-        env:
-          FLYWAY_VALIDATE_MIGRATION_NAMING: true
+  #migration:
+  #  name: Run Flyway Migration
+  #  runs-on: ubuntu-latest
+  # 
+  #  steps:
+  #    - name: Checkout
+  #      uses: actions/checkout@v3.0.0
+  #
+  #    - name: Run Live Flyway Migrations
+  #      uses: joshuaavalon/flyway-action@v3.0.0
+  #      with:
+  #        url: ${{ secrets.DB_URL }}
+  #        user: ${{ secrets.DB_USER }}
+  #        password: ${{ secrets.DB_PASSWORD }}
+  #        locations:  filesystem:./migrations
+  #      env:
+  #        FLYWAY_VALIDATE_MIGRATION_NAMING: true
