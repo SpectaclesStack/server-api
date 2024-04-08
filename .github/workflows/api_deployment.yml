@@ -98,11 +98,12 @@ jobs:
         docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        
+
     - name: Deploy docker image to EC2 
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}     
+        ECR_REPO_PASSWORD: ${{ secrets.ECR_REPO_PASSWORD }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
         AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
@@ -117,7 +118,7 @@ jobs:
           sudo apt update
           sudp apt install docker.io -y
           sudo apt install awscli -y
-          sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
+          sudo $(aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REPO_PASSWORD }}  );
           sudo docker stop server-api || true
           sudo docker rm server-api || true
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
