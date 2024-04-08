@@ -103,7 +103,7 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
         CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
       uses: appleboy/ssh-action@master
       with:
         host: ${{ env.EC2_IP }}
