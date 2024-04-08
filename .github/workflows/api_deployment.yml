@@ -115,7 +115,7 @@ jobs:
         key: ${{ env.SSH_KEY }}
         envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
         script: |-
-          sudo aws ecr get-login-password --region ${{ env.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ env.ECR_REPO_PASSWORD }}
+          sudo docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.AWS_REGION }}) ${{ env.ECR_REPO_PASSWORD }}
           sudo docker stop server-api || true
           sudo docker rm server-api || true
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
