@@ -1,8 +1,10 @@
-name: Deploy to Amazon ECS
+name: Deploy to Amazon EC2
 
 on:
   push:
-    #branches:
+    branches:
+      - WandileServer
+
 permissions:
   id-token: write
   contents: read
