@@ -68,9 +68,11 @@ jobs:
 
     - name: Configure AWS credentials from AWS account
       uses: aws-actions/configure-aws-credentials@v4
+      id: creds
       with:
         role-to-assume: ${{ secrets.AWS_ROLE }}
         aws-region: ${{ secrets.AWS_REGION }}
+        output-credentials: true
         role-session-name: Github-OIDC-TERRAFORM
         audience: sts.amazonaws.com
 
@@ -102,14 +104,19 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}     
         AWS_REGION: ${{ secrets.AWS_REGION }}
-        SSH_KEY: ${{ secrets.EC2_SSH_KEY_NAME }}
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
+        AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
+        AWS_SECRET_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
       uses: appleboy/ssh-action@master
       with:
         host: ${{ env.EC2_IP }}
         username: ubuntu
         key: ${{ env.SSH_KEY }}
-        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, AWS_REGION
+        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_KEY
         script: |-
+          sudo apt update
+          sudp apt install docker.io -y
+          sudo apt install awscli -y
           sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           sudo docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
