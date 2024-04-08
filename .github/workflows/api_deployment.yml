@@ -112,10 +112,10 @@ jobs:
         envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, CONNECTION_STRING, AWS_REGION
         script: |-
           sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
-          sudo docker stop $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || true
-          sudo docker rm $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || true
+          sudo docker stop server-api || true
+          sudo docker rm server-api || true
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          sudo docker run -d $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -p 5033:8080
+          sudo docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   #migration:
   # name: Run Flyway Migration
   # runs-on: ubuntu-latest
