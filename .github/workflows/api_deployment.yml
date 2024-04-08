@@ -56,7 +56,7 @@ jobs:
       - name: Host IP Address
         id: set-ip
         run: |
-          echo "::set-output name=instance_public_ip::$( steps.plan.outputs.ec2_public_ip )" >> $GITHUB_ENV
+          echo "::set-output name=instance_public_ip::$( steps.plan.output.ec2_public_ip )" >> $GITHUB_ENV
 
   build-docker-image:
     name: Build and Push Docker Image
@@ -79,41 +79,41 @@ jobs:
         role-session-name: Github-OIDC-TERRAFORM
         audience: sts.amazonaws.com
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1 
-
-    - name: Build and push image
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to EC2
-        docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-    - name: Deploy docker image to EC2 
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
-        CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.SERVER_PUBLIC_IP }}
-        username: ubuntu
-        key: ${{ env.SSH_KEY }}
-        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, CONNECTION_STRING, AWS_REGION
-        script: |-
-          sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
-          sudo docker stop api_appication || true
-          sudo docker rm api_application || true
-          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          sudo docker run -d api_application -p 5033:8080
+    #- name: Login to Amazon ECR
+    #  id: login-ecr
+    #  uses: aws-actions/amazon-ecr-login@v1 
+#
+    #- name: Build and push image
+    #  id: build-image
+    #  env:
+    #    ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    #    ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+    #    IMAGE_TAG: ${{ github.sha }}
+    #  run: |
+    #    # Build a docker container and
+    #    # push it to ECR so that it can
+    #    # be deployed to EC2
+    #    docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    #    docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    #    echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+#
+    #- name: Deploy docker image to EC2 
+    #  env:
+    #    ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    #    ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+    #    IMAGE_TAG: ${{ github.sha }}
+    #    CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+    #    AWS_REGION: ${{ secrets.AWS_REGION }}
+    #    SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+    #  uses: appleboy/ssh-action@master
+    #  with:
+    #    host: ${{ env.SERVER_PUBLIC_IP }}
+    #    username: ubuntu
+    #    key: ${{ env.SSH_KEY }}
+    #    envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, CONNECTION_STRING, AWS_REGION
+    #    script: |-
+    #      sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
+    #      sudo docker stop api_appication || true
+    #      sudo docker rm api_application || true
+    #      sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    #      sudo docker run -d api_application -p 5033:8080
