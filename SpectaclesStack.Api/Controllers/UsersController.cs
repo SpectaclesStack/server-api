@@ -62,7 +62,7 @@ namespace spectaclesStackServer.Controllers
                 return BadRequest(ModelState);
 
             var user = userRepository.GetUsers()
-                .Where(u => u.Email == createUser.Email)
+                .Where(u => u.UserName == createUser.UserName)
                 .FirstOrDefault();
 
             if (user != null)
