@@ -111,10 +111,10 @@ jobs:
         username: ubuntu
         key: ${{ env.SSH_KEY }}
         script: |-
-          docker stop server-api || true
-          docker rm server-api || true
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo docker stop server-api || true
+          sudo docker rm server-api || true
+          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   # sudo apt update
   # sudp apt install docker.io -y
   # sudo apt install awscli -y
