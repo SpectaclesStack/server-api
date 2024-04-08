@@ -14,17 +14,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//var configuration = builder.Configuration;
-
-// build connection string
-/*var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!
-    .Replace("{USERNAME}", username)
-    .Replace("{PASSWORD}", password)
-    .Replace("{SERVERNAME}", serverName)
-    .Replace("{DB_NAME}", databaseName);*/
-
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
-
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(connectionString ??
