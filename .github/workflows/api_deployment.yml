@@ -101,7 +101,6 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
-        CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
       uses: appleboy/ssh-action@master
@@ -109,13 +108,14 @@ jobs:
         host: ${{ env.EC2_IP }}
         username: ubuntu
         key: ${{ env.SSH_KEY }}
-        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, CONNECTION_STRING, AWS_REGION
+        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, AWS_REGION
         script: |-
           sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
-          sudo docker stop server-api || true
-          sudo docker rm server-api || true
           sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           sudo docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+  
+  #sudo docker stop server-api || true
+  #sudo docker rm server-api || true
   #migration:
   # name: Run Flyway Migration
   # runs-on: ubuntu-latest
