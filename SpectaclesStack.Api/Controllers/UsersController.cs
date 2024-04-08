@@ -54,6 +54,10 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUser([FromBody] Users createUser)
         {
+             if (createUser.CreateAt == null)
+            {
+                createUser.CreateAt = DateTime.UtcNow;
+            }
             if (createUser == null)
                 return BadRequest(ModelState);
 
