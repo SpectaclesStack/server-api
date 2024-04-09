@@ -17,11 +17,11 @@ jobs:
   #  defaults:
   #    run:
   #      shell: bash
-#
+
   #  steps:
   #    - name: Git checkout 
   #      uses: actions/checkout@v3
-#
+
   #    - name: Configure AWS credentials from AWS account
   #      uses: aws-actions/configure-aws-credentials@v4
   #      with:
@@ -29,22 +29,22 @@ jobs:
   #        aws-region: ${{ secrets.AWS_REGION }}
   #        role-session-name: Github-OIDC-TERRAFORM
   #        audience: sts.amazonaws.com
-#
+
   #    - name: Setup Terraform
   #      uses: hashicorp/setup-terraform@v2
   #      with:
   #        terraform_version: 1.6.6
-#
+
   #    - name: Terraform Init 
   #      id: init
   #      working-directory: ./terraform
   #      run: terraform init 
-#
+
   #    - name: Terraform Validate
   #      id: validate
   #      working-directory: ./terraform
   #      run: terraform validate
-#
+
   #    - name: Terraform Plan
   #      id: plan
   #      working-directory: ./terraform
@@ -60,7 +60,7 @@ jobs:
     environment: production
     env:
       IMAGE_TAG: ${{ github.sha }}
-    # needs: deploy
+      needs: deploy
 
     steps:
     - name: Checkout
@@ -118,7 +118,7 @@ jobs:
            sudo docker stop server-api || true
            sudo docker rm server-api || true
            sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-           sudo docker run -d --name server-api -p 5033:8080 -e SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} -e DATABASE_NAME=${{ secrets.DB_NAME }} -e USERNAME=${{ secrets.DB_USER }} -e PASSWORD=${{ secrets.DB_PASSWORD }} $REGISTRY/$REPOSITORY:$IMAGE_TAG
+           sudo docker run -d --name server-api -p 5033:8080 -e SERVER_NAME="${{ secrets.RDS_SERVER_NAME }}" -e DATABASE_NAME="${{ secrets.DB_NAME }}" -e USERNAME="${{ secrets.DB_USER }}" -e PASSWORD="${{ secrets.DB_PASSWORD }}" $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   #migration:
   # name: Run Flyway Migration
