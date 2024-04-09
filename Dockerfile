@@ -8,23 +8,13 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-#ENV DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER = 1
-ARG SERVER_NAME
-ARG DATABASE_NAME
-ARG USERNAME
-ARG PASSWORD
-ENV SERVER_NAME = ${SERVER_NAME}
-ENV DATABASE_NAME = ${DATABASE_NAME}
-ENV USERNAME = ${USERNAME}
-ENV PASSWORD = ${PASSWORD}
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["SpectaclesStack.Api/spectaclesStackServer.csproj", "."]
 RUN dotnet restore "spectaclesStackServer.csproj"
 COPY . .
 WORKDIR /src
-RUN dotnet build "SpectaclesStack.Api/spectaclesStackServer.csproj" -c $BUILD_CONFIGURATION /app/build 
+RUN dotnet build "SpectaclesStack.Api/spectaclesStackServer.csproj" -c $BUILD_CONFIGURATION /app
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -35,6 +25,13 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 ENV ASPNETCORE_ENVIRONMENT=Development
-
+ARG SERVER_NAME
+ARG DATABASE_NAME
+ARG USERNAME
+ARG PASSWORD
+ENV SERVER_NAME = ${SERVER_NAME}
+ENV DATABASE_NAME = ${DATABASE_NAME}
+ENV USERNAME = ${USERNAME}
+ENV PASSWORD = ${PASSWORD}
 # start running the application
 ENTRYPOINT ["dotnet", "spectaclesStackServer.dll"] 

@@ -94,7 +94,7 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to EC2
-        docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -118,16 +118,12 @@ jobs:
            sudo docker stop server-api || true
            sudo docker rm server-api || true
            sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-           sudo docker run -d --name server-api -p 5033:8080 $REGISTRY/$REPOSITORY:$IMAGE_TAG
-  # sudo apt update
-  # sudp apt install docker.io -y
-  # sudo apt install awscli -y
-  #sudo docker stop server-api || true
-  #sudo docker rm server-api || true
+           sudo docker run -d --name server-api -p 5033:8080 -e SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} -e DATABASE_NAME=${{ secrets.DB_NAME }} -e USERNAME=${{ secrets.DB_USER }} -e PASSWORD=${{ secrets.DB_PASSWORD }} $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
   #migration:
   # name: Run Flyway Migration
   # runs-on: ubuntu-latest
-  
+
   # steps:
   #   - name: Checkout
   #     uses: actions/checkout@v3.0.0

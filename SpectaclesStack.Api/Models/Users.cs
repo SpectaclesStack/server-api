@@ -15,9 +15,6 @@ namespace spectaclesStackServer.Model
         [Column("username")]
         public required string UserName {get;set;}
 
-        [Column("email")]
-        public required string Email {get;set;}
-
         [Column("datecreated")]
         public required DateTime? CreateAt { get; set; }
 
