@@ -113,6 +113,8 @@ jobs:
         key:  ${{ secrets.EC2_SSH_KEY_VALUE }}
         envs: PRIVATE_SSH_KEY, REGISTRY, REPOSITORY, IMAGE_TAG, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
         script: |-
+           export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}
+           export AWS_ACCESS_KEY_ID=${{ env.AWS_ACCESS_KEY_ID }}
            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.ECR_REPO_PASSWORD }}
            sudo docker stop server-api || true
            sudo docker rm server-api || true
