@@ -49,7 +49,7 @@ jobs:
   #      id: plan
   #      working-directory: ./terraform
   #      run: terraform plan
-#
+
   #    - name: Terraform Apply
   #      working-directory: ./terraform
   #      run: terraform apply -auto-approve
@@ -97,7 +97,7 @@ jobs:
         docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        
+
     - name: Executing remote ssh commands using ssh key
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
