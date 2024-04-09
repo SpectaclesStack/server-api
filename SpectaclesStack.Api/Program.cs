@@ -18,6 +18,12 @@ var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString();
 
 var connectionString = "Server="+serverName+";Port=5432;Database="+databaseName+";Username="+username+";Password="+password;
 
+/*var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!
+    .Replace("{USERNAME}", username)
+    .Replace("{PASSWORD}", password)
+    .Replace("{SERVERNAME}", serverName)
+    .Replace("{DB_NAME}", databaseName);*/
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(connectionString ??
