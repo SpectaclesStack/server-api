@@ -17,7 +17,7 @@ jobs:
   #  defaults:
   #    run:
   #      shell: bash
-
+#
   #  steps:
   #    - name: Git checkout 
   #      uses: actions/checkout@v3
@@ -78,10 +78,9 @@ jobs:
 
     - name: Set IP env variable
       run: |
-        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_VALUE }}'].PublicIpAddress" --output text)
+        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
         echo "::add-mask::$EC2_IP"
         echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
-
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1 
@@ -98,7 +97,7 @@ jobs:
         docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
+        
     - name: Executing remote ssh commands using ssh key
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
