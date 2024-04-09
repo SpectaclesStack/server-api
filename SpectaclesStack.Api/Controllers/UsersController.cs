@@ -33,7 +33,7 @@ namespace spectaclesStackServer.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{UserId}")]
+        [HttpGet("{userId}")]
         [ProducesResponseType(200, Type = typeof(Users))]
         [ProducesResponseType(400)]
         public IActionResult GetUsers(int userId)
@@ -81,7 +81,7 @@ namespace spectaclesStackServer.Controllers
             return Ok("Successfully created");
         }
 
-        [HttpPut("{UserId}")]
+        [HttpPut("{userId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -110,7 +110,7 @@ namespace spectaclesStackServer.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{UserId}")]
+        [HttpDelete("{userId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
