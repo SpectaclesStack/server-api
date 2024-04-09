@@ -78,7 +78,7 @@ jobs:
 
     - name: Set IP env variable
       run: |
-        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
+        EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_VALUE }}'].PublicIpAddress" --output text)
         echo "::add-mask::$EC2_IP"
         echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
 
