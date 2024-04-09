@@ -17,7 +17,7 @@ jobs:
   #  defaults:
   #    run:
   #      shell: bash
-#
+
   #  steps:
   #    - name: Git checkout 
   #      uses: actions/checkout@v3
@@ -58,6 +58,8 @@ jobs:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     environment: production
+    env:
+      IMAGE_TAG: ${{ github.sha }}
     # needs: deploy
 
     steps:
@@ -93,12 +95,14 @@ jobs:
         # Build a docker container and
         # push it to ECR so that it can
         # be deployed to EC2
-        docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t devwasabi/${{ steps.login-ecr.outputs.registry }}:${{ github.sha }} .
-        docker push devwasabi/${{ steps.login-ecr.outputs.registry }}:${{ github.sha }}
-        echo "image=devwasabi/${{ steps.login-ecr.outputs.registry }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+        docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Deploy docker image to EC2 
       env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}     
         AWS_REGION: ${{ secrets.AWS_REGION }}
         SSH_KEY: ${{ secrets.EC2_SSH_KEY_VALUE }}
       uses: appleboy/ssh-action@master
@@ -109,8 +113,8 @@ jobs:
         script: |-
           sudo docker stop server-api || true
           sudo docker rm server-api || true
-          sudo docker pull devwasabi/${{ steps.login-ecr.outputs.registry }}:${{ github.sha }}
-          sudo docker run -d --name server-api -p 5033:8080 devwasabi/${{ steps.login-ecr.outputs.registry }}:${{ github.sha }}
+          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo docker run -d --name server-api -p 5033:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   # sudo apt update
   # sudp apt install docker.io -y
   # sudo apt install awscli -y
