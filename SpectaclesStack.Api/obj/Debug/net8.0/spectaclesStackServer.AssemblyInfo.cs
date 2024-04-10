@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("spectaclesStackServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1df12a05dde950fcf3974850591ea564b3b8c7b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9cab68e67dd67814879a324139195e82c157a4fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("spectaclesStackServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("spectaclesStackServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
