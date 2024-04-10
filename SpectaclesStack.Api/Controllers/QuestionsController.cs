@@ -28,15 +28,15 @@ namespace spectaclesStackServer.Controllers
             return Ok(questions);
         }
 
-        [HttpGet("{QuestionId}")]
+        [HttpGet("{questionId}")]
         [ProducesResponseType(200, Type = typeof(Questions))]
         [ProducesResponseType(400)]
-        public IActionResult GetUsers(int QuestionId)
+        public IActionResult GetUsers(int questionId)
         {
-            if (!questionsRepository.QuestionExists(QuestionId))
+            if (!questionsRepository.QuestionExists(questionId))
                 return NotFound();
 
-            var question = questionsRepository.GetQuestion(QuestionId);
+            var question = questionsRepository.GetQuestion(questionId);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -49,6 +49,11 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateQuestion([FromBody] Questions createQuestion)
         {
+            if (createQuestion.CreateAt == null)
+            {
+                createQuestion.CreateAt = DateTime.UtcNow;
+            }
+
             if (createQuestion == null)
                 return BadRequest(ModelState);
 
@@ -105,7 +110,7 @@ namespace spectaclesStackServer.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{QuestionId}")]
+        [HttpDelete("{questionId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

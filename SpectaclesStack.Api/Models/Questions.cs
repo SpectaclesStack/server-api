@@ -10,11 +10,7 @@ namespace spectaclesStackServer.Model
         [Column("questionid")]
         public int QuestionId{get;set;}
 
-        //[Column("userid")]
-        //public int UserId { get; set; }
-
-        //[Column("userid")]
-        [ForeignKey("UserId")]
+        [ForeignKey("userid")]
         public required Users Users { get;set;}
 
         [Column("title")]
