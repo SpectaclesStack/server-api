@@ -2846,11 +2846,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
+      "projectUniqueName": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\server-api\\server-api\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
       "projectName": "spectaclesStackServer",
-      "projectPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
+      "projectPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\server-api\\server-api\\SpectaclesStack.Api\\spectaclesStackServer.csproj",
       "packagesPath": "C:\\Users\\bbdnet2625\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\SpectaclesStack.Api\\obj\\",
+      "outputPath": "C:\\Users\\bbdnet2625\\Documents\\GRAD20224\\SpectablesStack\\Server\\server-api\\server-api\\SpectaclesStack.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

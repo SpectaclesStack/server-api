@@ -33,7 +33,7 @@ namespace spectaclesStackServer.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{UserId}")]
+        [HttpGet("{userId}")]
         [ProducesResponseType(200, Type = typeof(Users))]
         [ProducesResponseType(400)]
         public IActionResult GetUsers(int userId)
