@@ -18,6 +18,7 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
       needs: deploy
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -30,6 +31,7 @@ jobs:
         output-credentials: true
         role-session-name: Github-OIDC-TERRAFORM
         audience: sts.amazonaws.com
+
     - name: Set IP env variable
       run: |
         EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
