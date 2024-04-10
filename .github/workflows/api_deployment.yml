@@ -16,7 +16,6 @@ jobs:
     environment: production
     env:
       IMAGE_TAG: ${{ github.sha }}
-      needs: deploy
 
     steps:
     - name: Checkout
