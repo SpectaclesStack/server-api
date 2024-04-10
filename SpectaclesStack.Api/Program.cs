@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = "Server=spectacles-stack-rds-instance.cnsrxqmoyvuz.eu-west-1.rds.amazonaws.com;Port=5432;Database=SpectablesStackDB;Username=bbdGradWandile;Password=gWv[A7k86lZ9ZHP3a7F*WRj>$]kb;";
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(connectionString ??

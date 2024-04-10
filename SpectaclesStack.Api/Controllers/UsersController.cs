@@ -20,7 +20,7 @@ namespace spectaclesStackServer.Controllers
         {
             this.userRepository = usersRepository;
         }
-
+        
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Users>))]
         public IActionResult GetUser()
@@ -40,7 +40,7 @@ namespace spectaclesStackServer.Controllers
         {
             if (!userRepository.UserExists(userId))
                 return NotFound();
-
+            
             var user = userRepository.GetUser(userId);
 
             if (!ModelState.IsValid)
@@ -74,15 +74,15 @@ namespace spectaclesStackServer.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            //var userC = mapper.Map<Users>(createUser);
-
             if (!userRepository.CreateUser(createUser))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
+            
+            var newUser = userRepository.GetUser(createUser.UserId);
 
-            return Ok("Successfully created");
+            return Ok(newUser);
         }
 
         [HttpPut("{UserId}")]
