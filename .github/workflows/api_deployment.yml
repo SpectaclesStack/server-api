@@ -12,13 +12,12 @@ permissions:
 jobs:
   build-docker-image:
     name: Build and Push Docker Image
-    needs: deploy
     runs-on: ubuntu-latest
     environment: production
     env:
       IMAGE_TAG: ${{ github.sha }}
       needs: deploy
-      
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3
