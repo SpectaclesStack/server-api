@@ -1,0 +1,7 @@
+.vs
+coverage
+*.user
+SpectaclesStack.Api/obj
+SpectaclesStack.Api/bin
+SpectaclesStack.Api/coverage
+SpectaclesStack.Api/.vs

@@ -1,0 +1,117 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    #branches:
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy Infrastructure
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Git checkout 
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: Github-OIDC-TERRAFORM
+          audience: sts.amazonaws.com
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.6
+
+      - name: Terraform Init 
+        id: init
+        working-directory: ./terraform
+        run: terraform init 
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: ./terraform
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ./terraform
+        run: terraform plan
+
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
+
+      - name: Host IP Address
+        id: set-ip
+        run: |
+          echo "::set-output name=instance_public_ip::$( steps.plan.outputs.ec2_public_ip )"
+
+  build-docker-image:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    environment: production
+    needs: deploy
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set IP env variable
+      run: echo SERVER_PUBLIC_IP=${{ needs.deploy.outputs.instance_public_ip }} >> $GITHUB_ENV
+
+    - name: Configure AWS credentials from AWS account
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        role-session-name: Github-OIDC-TERRAFORM
+        audience: sts.amazonaws.com
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1 # I don't need to set env details sin
+
+    - name: Build and push image
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to EC2
+        docker build --build-arg SERVER_NAME=${{ secrets.RDS_SERVER_NAME }} --build-arg DATABASE_NAME=${{ secrets.DB_NAME }} --build-arg USERNAME=${{ secrets.DB_USER }} --build-arg PASSWORD=${{ secrets.DB_PASSWORD }} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Deploy docker image to EC2 
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
+        IMAGE_TAG: ${{ github.sha }}
+        CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ env.SERVER_PUBLIC_IP }}
+        username: ubuntu
+        key: ${{ env.SSH_KEY }}
+        envs: SSH_KEY, ECR_REGISTRY, ECR_REPOSITORY, IMAGE_TAG, CONNECTION_STRING, AWS_REGION
+        script: |-
+          sudo $(aws ecr get-login --no-include-email --region ${{ env.AWS_REGION }});
+          sudo docker stop api_appication || true
+          sudo docker rm api_application || true
+          sudo docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          sudo docker run -d api_application -p 5033:8080

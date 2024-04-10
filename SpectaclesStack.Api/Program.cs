@@ -4,16 +4,21 @@ using spectaclesStackServer.Data;
 using spectaclesStackServer.Interface;
 using spectaclesStackServer.Repository;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-var connectionString = "Server=spectacles-stack-rds-instance.cnsrxqmoyvuz.eu-west-1.rds.amazonaws.com;Port=5432;Database=SpectablesStackDB;Username=bbdGradWandile;Password=gWv[A7k86lZ9ZHP3a7F*WRj>$]kb;";
+
+var serverName = Environment.GetEnvironmentVariable("SERVER_NAME")?.ToString().Remove(0,2);
+var databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME")?.ToString().Remove(0,2);
+var username = Environment.GetEnvironmentVariable("USERNAME")?.ToString().Remove(0,2);
+var password = Environment.GetEnvironmentVariable("PASSWORD")?.ToString().Remove(0,2);
+
+var connectionString = "Server="+serverName+";Port=5432;Database="+databaseName+";Username="+username+";Password="+password+";";
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(connectionString ??
@@ -26,7 +31,6 @@ builder.Services.AddScoped<IQuestionsRepository, QuestionsRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
