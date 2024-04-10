@@ -10,18 +10,17 @@ namespace spectaclesStackServer.Model
         [Column("answerid")]
         public int AnswerId {get;set;}
 
-        //[Column("questionid")]
-        //public int QuestionId { get; set; }
-        //[Column("questionid")]
         [ForeignKey("questionid")]
-        public required Questions Questions { get;set;}
+        public required int questionid { get;set;}
 
         [ForeignKey("userid")]
-        public required Users Users { get;set;}
+        public required int userid { get;set;}
 
         [Column("createdat")]
         public required DateTime CreateAt { get; set; }
 
+        [Column ("answer")]
+        public required string answer{get;set;}
     }
 }
 

@@ -11,8 +11,8 @@ namespace spectaclesStackServer.Model
         public int QuestionId{get;set;}
 
         [ForeignKey("userid")]
-        public required Users Users { get;set;}
-
+        public int userid { get; set; }
+    
         [Column("title")]
         public required string Title {get;set;}
 

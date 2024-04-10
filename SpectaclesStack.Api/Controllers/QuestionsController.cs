@@ -18,7 +18,7 @@ namespace spectaclesStackServer.Controllers
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Questions>))]
-        public IActionResult GetUser()
+        public IActionResult GetQuestions()
         {
             var questions = questionsRepository.GetQuestions();
 
@@ -31,7 +31,7 @@ namespace spectaclesStackServer.Controllers
         [HttpGet("{questionId}")]
         [ProducesResponseType(200, Type = typeof(Questions))]
         [ProducesResponseType(400)]
-        public IActionResult GetUsers(int questionId)
+        public IActionResult GetQuestion(int questionId)
         {
             if (!questionsRepository.QuestionExists(questionId))
                 return NotFound();
@@ -48,18 +48,18 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult CreateQuestion([FromBody] Questions createQuestion)
-        {
-            if (createQuestion.CreateAt == null)
-            {
-                createQuestion.CreateAt = DateTime.UtcNow;
-            }
-
+        {  
+            createQuestion.CreateAt = DateTime.UtcNow;
+            
             if (createQuestion == null)
+            {
                 return BadRequest(ModelState);
+            }
 
             var question = questionsRepository.GetQuestions()
                 .Where(q => q.QuestionId == createQuestion.QuestionId)
                 .FirstOrDefault();
+            
 
             if (question != null)
             {
@@ -70,9 +70,9 @@ namespace spectaclesStackServer.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var questionC = createQuestion;
+            //var questionC = createQuestion;
 
-            if (!questionsRepository.CreateQuestion(questionC))
+            if (!questionsRepository.CreateQuestion(createQuestion))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -81,7 +81,7 @@ namespace spectaclesStackServer.Controllers
             return Ok("Successfully created");
         }
 
-        [HttpPut("{QuestionId}")]
+        [HttpPut("{questionId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
@@ -98,9 +98,7 @@ namespace spectaclesStackServer.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest();
-
-            var questionMap = questionId;
-
+            
             if (!questionsRepository.UpdateQuestion(updatedQuestion))
             {
                 ModelState.AddModelError("", "Something went wrong updating question");

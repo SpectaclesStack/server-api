@@ -11,7 +11,7 @@ namespace spectaclesStackServer.Data
     {
     
     }
-        public DbSet<Users> Users { get; set; } = default!;
+    public DbSet<Users> Users { get; set; } = default!;
 
     public DbSet<Questions> Questions { get; set; } = default!;
 
