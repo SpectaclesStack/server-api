@@ -21,9 +21,7 @@ namespace spectaclesStackServer.Model
 
         [Column("createdat")]
         public required DateTime CreateAt {get;set;} 
-
     }
-
 }
 
 
