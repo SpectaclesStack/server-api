@@ -78,7 +78,9 @@ namespace spectaclesStackServer.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok();
+            var newQuestion = questionsRepository.GetQuestion(createQuestion.QuestionId);
+
+            return Ok(newQuestion);
         }
 
         [HttpPut("{questionId}")]
