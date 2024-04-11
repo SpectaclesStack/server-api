@@ -54,9 +54,9 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUser([FromBody] Users createUser)
         {
-             if (createUser.CreateAt == null)
+             if (createUser.DateCreated == null)
             {
-                createUser.CreateAt = DateTime.UtcNow;
+                createUser.DateCreated = DateTime.UtcNow;
             }
             if (createUser == null)
                 return BadRequest(ModelState);
@@ -65,11 +65,11 @@ namespace spectaclesStackServer.Controllers
                 .Where(u => u.UserName == createUser.UserName)
                 .FirstOrDefault();
 
-            if (user != null)
-            {
-                ModelState.AddModelError("", "User already exists");
-                return StatusCode(422, ModelState);
-            }
+            // if (user != null)
+            // {
+            //     ModelState.AddModelError("", "User already exists");
+            //     return StatusCode(422, ModelState);
+            // }
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,7 +85,7 @@ namespace spectaclesStackServer.Controllers
             return Ok(newUser);
         }
 
-        [HttpPut("{UserId}")]
+        [HttpPut("{userId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

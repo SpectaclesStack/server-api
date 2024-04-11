@@ -16,7 +16,7 @@ namespace spectaclesStackServer.Model
         public required string UserName {get;set;}
 
         [Column("datecreated")]
-        public required DateTime? CreateAt { get; set; }
+        public required DateTime? DateCreated { get; set; }
 
     }
 
