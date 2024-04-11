@@ -78,7 +78,7 @@ namespace spectaclesStackServer.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successfully created");
+            return Ok();
         }
 
         [HttpPut("{questionId}")]
