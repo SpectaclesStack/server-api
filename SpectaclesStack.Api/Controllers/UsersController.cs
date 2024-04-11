@@ -65,8 +65,6 @@ namespace spectaclesStackServer.Controllers
                 .Where(u => u.UserName == createUser.UserName)
                 .FirstOrDefault();
 
-            //var newUser = userRepository.GetUser(createUser.UserId); 
-
              if (user != null)
             {
                 return Ok(user);
@@ -84,7 +82,10 @@ namespace spectaclesStackServer.Controllers
                 return StatusCode(500, ModelState);
             }
             
-            return Ok(user);
+            
+            var newUser = userRepository.GetUser(createUser.UserId); 
+
+            return Ok(newUser);
         }
 
         [HttpPut("{userId}")]
