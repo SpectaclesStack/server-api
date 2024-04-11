@@ -35,9 +35,11 @@ jobs:
         EC2_IP=$(aws ec2 describe-instances --query "Reservations[*].Instances[?KeyName=='${{ secrets.EC2_SSH_KEY_NAME }}'].PublicIpAddress" --output text)
         echo "::add-mask::$EC2_IP"
         echo "EC2_IP=$EC2_IP" >> $GITHUB_ENV
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1 
+      
     - name: Build and push image
       id: build-image
       env:
@@ -50,6 +52,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        
     - name: Executing remote ssh commands using ssh key
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
