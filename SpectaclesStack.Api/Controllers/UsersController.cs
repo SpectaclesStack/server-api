@@ -49,7 +49,7 @@ namespace spectaclesStackServer.Controllers
 
             if (user == null)
             {
-                return NotFound(); // If user not found, return NotFound
+                return NotFound(); 
             }
 
             if (!ModelState.IsValid)
