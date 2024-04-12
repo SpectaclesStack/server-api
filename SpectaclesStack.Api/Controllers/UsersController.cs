@@ -54,10 +54,8 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateUser([FromBody] Users createUser)
         {
-             if (createUser.DateCreated == null)
-            {
-                createUser.DateCreated = DateTime.UtcNow;
-            }
+            createUser.DateCreated = DateTime.UtcNow;
+            
             if (createUser == null)
                 return BadRequest(ModelState);
 
@@ -68,9 +66,6 @@ namespace spectaclesStackServer.Controllers
              if (user != null)
             {
                 return Ok(user);
-
-            //     ModelState.AddModelError("", "User already exists");
-            //     return StatusCode(422, ModelState);
             }
 
             if (!ModelState.IsValid)
@@ -81,7 +76,6 @@ namespace spectaclesStackServer.Controllers
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
-            
             
             var newUser = userRepository.GetUser(createUser.UserId); 
 
@@ -94,6 +88,8 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateUser(int userId, [FromBody] Users updatedUser)
         {
+            updatedUser.DateCreated = DateTime.UtcNow;
+
             if (updatedUser == null)
                 return BadRequest(ModelState);
 
@@ -122,7 +118,7 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult DeleteUser(int userId)
-        {
+        {   
             if (!userRepository.UserExists(userId))
             {
                 return NotFound();

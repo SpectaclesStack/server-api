@@ -50,6 +50,8 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         public IActionResult CreateAnswer([FromBody] Answers createAnswer)
         {
+            createAnswer.CreateAt = DateTime.UtcNow;
+
             if (createAnswer == null)
                 return BadRequest(ModelState);
 
@@ -85,6 +87,8 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateAnswer(int answerId, [FromBody] Answers updatedAnswer)
         {
+            updatedAnswer.CreateAt = DateTime.UtcNow;
+
             if (updatedAnswer == null)
                 return BadRequest(ModelState);
 

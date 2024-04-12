@@ -89,6 +89,8 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(404)]
         public IActionResult UpdateQuestion(int questionId, [FromBody] Questions updatedQuestion)
         {
+            updatedQuestion.CreateAt = DateTime.UtcNow;
+
             if (updatedQuestion == null)
                 return BadRequest(ModelState);
 
