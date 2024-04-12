@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using spectaclesStackServer.Dto;
 using spectaclesStackServer.Interface;
 using spectaclesStackServer.Model;
+using SpectacularOauth;
 
 namespace spectaclesStackServer.Controllers
 {
@@ -78,10 +79,19 @@ namespace spectaclesStackServer.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-       public IActionResult CreateAnswer([FromBody] Answers createAnswer)
+       public async Task<IActionResult> CreateAnswer([FromBody] Answers createAnswer)
     {
        try
        {
+            string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+            bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+            if (!authorized)
+            {
+                return Unauthorized();
+            }
+                
             if (createAnswer == null)
                 return BadRequest(ModelState);
 
@@ -124,10 +134,19 @@ namespace spectaclesStackServer.Controllers
     [ProducesResponseType(400)]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public IActionResult UpdateAnswer(int answerId, [FromBody] Answers updatedAnswer)
+    public async Task<IActionResult> UpdateAnswer(int answerId, [FromBody] Answers updatedAnswer)
    {
         try
-        {  
+        {
+            string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+            bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+            if (!authorized)
+            {
+                return Unauthorized();
+            }
+
             updatedAnswer.CreateAt = DateTime.UtcNow;
         
             if (updatedAnswer == null)

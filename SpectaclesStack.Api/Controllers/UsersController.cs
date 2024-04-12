@@ -5,6 +5,7 @@ using spectaclesStackServer.Dto;
 using Microsoft.AspNetCore.Mvc;
 using spectaclesStackServer.Repository;
 using spectaclesStackServer.Interface;
+using SpectacularOauth;
 
 namespace spectaclesStackServer.Controllers
 {
@@ -71,11 +72,20 @@ namespace spectaclesStackServer.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-       public IActionResult CreateUser([FromBody] Users createUser)
+       public async Task<IActionResult> CreateUser([FromBody] Users createUser)
     {
         try
         {
-            if (createUser == null)
+                string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+                bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+                if (!authorized)
+                {
+                    return Unauthorized();
+                }
+
+                if (createUser == null)
             {
                 return BadRequest("User data is null.");
             }
@@ -118,11 +128,20 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateUser(int userId, [FromBody] Users updatedUser)
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] Users updatedUser)
     {
         try
         {
-            if (updatedUser == null)
+                string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+                bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+                if (!authorized)
+                {
+                    return Unauthorized();
+                }
+
+                if (updatedUser == null)
             {
                 return BadRequest("Updated user data is null.");
             }
@@ -161,49 +180,6 @@ namespace spectaclesStackServer.Controllers
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
-
-
-        [HttpDelete("{UserId}")]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-       public IActionResult DeleteUser(int userId)
-        {
-            try
-            {
-                if (!userRepository.UserExists(userId))
-                {
-                    return NotFound();
-                }
-
-                var userToDelete = userRepository.GetUser(userId);
-
-                if (userToDelete == null)
-                {
-                    return NotFound(); 
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (!userRepository.DeleteUser(userToDelete))
-                {
-                    ModelState.AddModelError("", "Something went wrong deleting the user.");
-                    return StatusCode(500, ModelState);
-                }
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                
-                Console.WriteLine($"An error occurred: {ex.Message}");
-
-                return StatusCode(500, "An error occurred while processing your request.");
-            }
-        }
 
     }
 }

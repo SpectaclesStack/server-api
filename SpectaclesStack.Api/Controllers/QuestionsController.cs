@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using spectaclesStackServer.Dto;
 using spectaclesStackServer.Interface;
 using spectaclesStackServer.Model;
+using SpectacularOauth;
 
 namespace spectaclesStackServer.Controllers
 {
@@ -81,11 +82,20 @@ namespace spectaclesStackServer.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-       public IActionResult CreateQuestion([FromBody] Questions createQuestion)
+       public async Task<IActionResult> CreateQuestion([FromBody] Questions createQuestion)
     {
         try
         {
-            if (createQuestion == null)
+                string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+                bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+                if (!authorized)
+                {
+                    return Unauthorized();
+                }
+
+                if (createQuestion == null)
             {
                 return BadRequest("Question data is null.");
             }
@@ -128,11 +138,20 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-       public IActionResult UpdateQuestion(int questionId, [FromBody] Questions updatedQuestion)
+       public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] Questions updatedQuestion)
 {
     try
     {
-        if (updatedQuestion == null)
+                string accessToken = OauthHelper.GetAccessToken(HttpContext);
+
+                bool authorized = await OauthHelper.Autheenticate(accessToken);
+
+                if (!authorized)
+                {
+                    return Unauthorized();
+                }
+
+                if (updatedQuestion == null)
         {
             return BadRequest("Updated question data is null.");
         }
