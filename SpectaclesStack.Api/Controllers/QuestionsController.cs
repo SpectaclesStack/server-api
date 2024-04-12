@@ -107,8 +107,7 @@ namespace spectaclesStackServer.Controllers
 
             if (existingQuestion != null)
             {
-                ModelState.AddModelError("", "Question already exists.");
-                return UnprocessableEntity(ModelState);
+                    return Ok(existingQuestion);
             }
 
             if (!ModelState.IsValid)

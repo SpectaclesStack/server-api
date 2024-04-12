@@ -97,7 +97,7 @@ namespace spectaclesStackServer.Controllers
 
             if (existingUser != null)
             {
-                return Conflict("User already exists."); 
+                return Ok(existingUser); 
             }
 
             if (!ModelState.IsValid)
