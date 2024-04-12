@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using spectaclesStackServer.Dto;
 using spectaclesStackServer.Interface;
 using spectaclesStackServer.Model;
+using SpectacularOauth;
 
 namespace spectaclesStackServer.Controllers
 {
@@ -11,10 +12,35 @@ namespace spectaclesStackServer.Controllers
     {
         private readonly IQuestionsRepository questionsRepository;
 
-        public QuestionsController(IQuestionsRepository questionsRepository)
+        private readonly IUsersRepository userRepository;
+
+        public QuestionsController(IQuestionsRepository questionsRepository, IUsersRepository userRepository)
         {
             this.questionsRepository = questionsRepository;
+            this.userRepository = userRepository;
         }
+
+        private IDictionary<string, string> GetRequestHeaders()
+        {
+            IDictionary<string, string> headers = new Dictionary<string, string>();
+
+            foreach (var (key, value) in Request.Headers)
+            {
+                headers[key] = value.ToString();
+            }
+
+            return headers;
+        }    
+
+    private string GetAccessToken()
+    {
+        IDictionary<string, string> headers = GetRequestHeaders();
+        if (!headers.ContainsKey("Authorization"))
+            return null;
+
+        return headers["Authorization"].ToString()["Bearer ".Length..].Trim();
+    }
+
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Questions>))]
@@ -47,8 +73,17 @@ namespace spectaclesStackServer.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateQuestion([FromBody] Questions createQuestion)
-        {  
+        public async Task<IActionResult> CreateQuestion([FromBody] Questions createQuestion)
+        { 
+
+        string accessToken = GetAccessToken();
+    
+        string username = await OauthHelper.getUsername(accessToken);
+
+        // Ensure the user exists
+        if (!userRepository.UserExists(createQuestion.userid))
+            return Unauthorized();
+
             createQuestion.CreateAt = DateTime.UtcNow;
             
             if (createQuestion == null)
@@ -87,8 +122,16 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateQuestion(int questionId, [FromBody] Questions updatedQuestion)
+        public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] Questions updatedQuestion)
         {
+        string accessToken = GetAccessToken();
+    
+        string username = await OauthHelper.getUsername(accessToken);
+
+        // Ensure the user exists
+        if (!userRepository.UserExists(updatedQuestion.userid))
+            return Unauthorized();
+
             if (updatedQuestion == null)
                 return BadRequest(ModelState);
 

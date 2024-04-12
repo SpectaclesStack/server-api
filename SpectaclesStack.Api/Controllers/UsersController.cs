@@ -5,6 +5,7 @@ using spectaclesStackServer.Dto;
 using Microsoft.AspNetCore.Mvc;
 using spectaclesStackServer.Repository;
 using spectaclesStackServer.Interface;
+using SpectacularOauth;
 
 namespace spectaclesStackServer.Controllers
 {
@@ -20,6 +21,18 @@ namespace spectaclesStackServer.Controllers
         {
             this.userRepository = usersRepository;
         }
+
+        private IDictionary<string, string> GetRequestHeaders()
+        {
+            IDictionary<string, string> headers = new Dictionary<string, string>();
+
+            foreach (var (key, value) in Request.Headers)
+            {
+                headers[key] = value.ToString();
+            }
+
+            return headers;
+        }        
         
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Users>))]
@@ -49,73 +62,92 @@ namespace spectaclesStackServer.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public IActionResult CreateUser([FromBody] Users createUser)
-        {
-             if (createUser.DateCreated == null)
-            {
-                createUser.DateCreated = DateTime.UtcNow;
-            }
-            if (createUser == null)
-                return BadRequest(ModelState);
+[HttpPost]
+[ProducesResponseType(204)]
+[ProducesResponseType(400)]
+public async Task<IActionResult> CreateUser([FromBody] Users createUser)
+{
+    // Check for Authorization header and retrieve access token
+    string accessToken = GetAccessToken();
+    
+    // Retrieve username from GitHub using access token
+    string username = await OauthHelper.getUsername(accessToken);
 
-            var user = userRepository.GetUsers()
-                .Where(u => u.UserName == createUser.UserName)
-                .FirstOrDefault();
+    // If the createUser object is null, return BadRequest
+    if (createUser == null)
+        return BadRequest("User data is missing");
 
-             if (user != null)
-            {
-                return Ok(user);
+    // Ensure that the DateCreated field is set
+    if (createUser.DateCreated == null)
+        createUser.DateCreated = DateTime.UtcNow;
 
-            //     ModelState.AddModelError("", "User already exists");
-            //     return StatusCode(422, ModelState);
-            }
+    // Check if the username already exists
+    if (userRepository.GetUsers().Any(u => u.UserName == username))
+        return Conflict("User already exists");
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+    // Set the username to the retrieved username
+    createUser.UserName = username;
 
-            if (!userRepository.CreateUser(createUser))
-            {
-                ModelState.AddModelError("", "Something went wrong while saving");
-                return StatusCode(500, ModelState);
-            }
-            
-            
-            var newUser = userRepository.GetUser(createUser.UserId); 
+    // Perform model validation
+    if (!TryValidateModel(createUser))
+        return BadRequest(ModelState);
 
-            return Ok(newUser);
-        }
+    // Attempt to create the user
+    if (!userRepository.CreateUser(createUser))
+        return StatusCode(500, "Something went wrong while saving the user");
 
-        [HttpPut("{userId}")]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-        public IActionResult UpdateUser(int userId, [FromBody] Users updatedUser)
-        {
-            if (updatedUser == null)
-                return BadRequest(ModelState);
+    // Retrieve the newly created user
+    var newUser = userRepository.GetUsers().FirstOrDefault(u => u.UserName == username);
 
-            if (userId != updatedUser.UserId)
-                return BadRequest(ModelState);
+    // Return the newly created user
+    return Ok(newUser);
+}
 
-            if (!userRepository.UserExists(userId))
-                return NotFound();
 
-            if (!ModelState.IsValid)
-                return BadRequest();
+[HttpPut("{userId}")]
+[ProducesResponseType(400)]
+[ProducesResponseType(204)]
+[ProducesResponseType(404)]
+public async Task<IActionResult> UpdateUser(int userId, [FromBody] Users updatedUser)
+{
+    string accessToken = GetAccessToken();
+    
+    string username = await OauthHelper.getUsername(accessToken);
 
-            var userMap = updatedUser;
+    // Ensure the user exists
+    if (!userRepository.UserExists(userId))
+        return NotFound();
 
-            if (!userRepository.UpdateUser(userMap))
-            {
-                ModelState.AddModelError("", "Something went wrong updating user");
-                return StatusCode(500, ModelState);
-            }
+    // Retrieve the user to be updated
+    var existingUser = userRepository.GetUser(userId);
 
-            return NoContent();
-        }
+    // Ensure the user making the request is the owner of the resource
+    if (existingUser.UserName != username)
+        return Unauthorized();
+
+    // Update only the allowed fields
+    existingUser.UserName = updatedUser.UserName;
+
+    // Perform validation
+    if (!TryValidateModel(existingUser))
+        return BadRequest(ModelState);
+
+    // Update the user
+    if (!userRepository.UpdateUser(existingUser))
+        return StatusCode(500, "Something went wrong updating user");
+
+    return NoContent();
+}
+
+private string GetAccessToken()
+{
+    IDictionary<string, string> headers = GetRequestHeaders();
+    if (!headers.ContainsKey("Authorization"))
+        return null;
+
+    return headers["Authorization"].ToString()["Bearer ".Length..].Trim();
+}
+
 
         [HttpDelete("{UserId}")]
         [ProducesResponseType(400)]
