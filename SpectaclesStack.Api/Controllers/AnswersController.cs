@@ -25,22 +25,18 @@ namespace spectaclesStackServer.Controllers
         {
             var answers = answerRepository.GetAnswers();
 
-            // Check if the answers collection is null or empty
             if (answers == null || !answers.Any())
             {
-                // Return a 404 Not Found response if no answers are found
                 return NotFound("No answers found.");
             }
 
-            // Return a 200 OK response with the answers
             return Ok(answers);
         }
         catch (Exception ex)
         {
-            // Log the exception
+            
             Console.WriteLine($"An error occurred: {ex.Message}");
 
-            // Handle unexpected exceptions
             ModelState.AddModelError("", "An unexpected error occurred while processing the request");
             return StatusCode(500, ModelState);
         }
@@ -54,32 +50,26 @@ namespace spectaclesStackServer.Controllers
     {
         try
         {
-            // Check if the answer with the provided ID exists
             if (!answerRepository.AnswerExists(AnswerId))
             {
-                // Return a 404 Not Found response if the answer does not exist
+                
                 return NotFound("Answer not found.");
             }
-
-            // Retrieve the answer by its ID
+            
             var answer = answerRepository.GetAnswer(AnswerId);
 
-            // Check if the retrieved answer is null
             if (answer == null)
             {
-                // Return a 404 Not Found response if the answer is null
                 return NotFound("Answer not found.");
             }
 
-            // Return a 200 OK response with the retrieved answer
             return Ok(answer);
         }
         catch (Exception ex)
         {
-            // Log the exception
+    
             Console.WriteLine($"An error occurred: {ex.Message}");
 
-            // Handle unexpected exceptions
             ModelState.AddModelError("", "An unexpected error occurred while processing the request");
             return StatusCode(500, ModelState);
         }

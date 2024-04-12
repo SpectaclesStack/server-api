@@ -61,10 +61,8 @@ namespace spectaclesStackServer.Controllers
         }
         catch (Exception ex)
         {
-            // Log the exception for debugging purposes
             Console.WriteLine($"An error occurred: {ex.Message}");
 
-            // Return a generic error message
             return StatusCode(500, "An error occurred while processing your request.");
         }
       }
@@ -89,7 +87,7 @@ namespace spectaclesStackServer.Controllers
 
             if (existingUser != null)
             {
-                return Conflict("User already exists."); // Return 409 Conflict if user already exists
+                return Conflict("User already exists."); 
             }
 
             if (!ModelState.IsValid)
@@ -108,10 +106,9 @@ namespace spectaclesStackServer.Controllers
         }
         catch (Exception ex)
         {
-            // Log the exception for debugging purposes
+            
             Console.WriteLine($"An error occurred: {ex.Message}");
 
-            // Return a generic error message
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
@@ -158,10 +155,9 @@ namespace spectaclesStackServer.Controllers
         }
         catch (Exception ex)
         {
-            // Log the exception for debugging purposes
+          
             Console.WriteLine($"An error occurred: {ex.Message}");
 
-            // Return a generic error message
             return StatusCode(500, "An error occurred while processing your request.");
         }
     }
@@ -172,44 +168,42 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
        public IActionResult DeleteUser(int userId)
-    {
-        try
         {
-            if (!userRepository.UserExists(userId))
+            try
             {
-                return NotFound();
+                if (!userRepository.UserExists(userId))
+                {
+                    return NotFound();
+                }
+
+                var userToDelete = userRepository.GetUser(userId);
+
+                if (userToDelete == null)
+                {
+                    return NotFound(); 
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (!userRepository.DeleteUser(userToDelete))
+                {
+                    ModelState.AddModelError("", "Something went wrong deleting the user.");
+                    return StatusCode(500, ModelState);
+                }
+
+                return NoContent();
             }
-
-            var userToDelete = userRepository.GetUser(userId);
-
-            if (userToDelete == null)
+            catch (Exception ex)
             {
-                return NotFound(); // If user not found, return NotFound
-            }
+                
+                Console.WriteLine($"An error occurred: {ex.Message}");
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+                return StatusCode(500, "An error occurred while processing your request.");
             }
-
-            if (!userRepository.DeleteUser(userToDelete))
-            {
-                ModelState.AddModelError("", "Something went wrong deleting the user.");
-                return StatusCode(500, ModelState);
-            }
-
-            return NoContent();
         }
-        catch (Exception ex)
-        {
-            // Log the exception for debugging purposes
-            Console.WriteLine($"An error occurred: {ex.Message}");
-
-            // Return a generic error message
-            return StatusCode(500, "An error occurred while processing your request.");
-        }
-    }
-
 
     }
 }
