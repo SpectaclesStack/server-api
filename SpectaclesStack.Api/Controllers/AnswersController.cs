@@ -83,7 +83,7 @@ namespace spectaclesStackServer.Controllers
             ModelState.AddModelError("", "An unexpected error occurred while processing the request");
             return StatusCode(500, ModelState);
         }
-}
+    }
 
         [HttpPost]
         [ProducesResponseType(204)]
@@ -173,7 +173,7 @@ namespace spectaclesStackServer.Controllers
             ModelState.AddModelError("", "An unexpected error occurred while processing the request");
             return StatusCode(500, ModelState);
         }
-}
+    }
 
     }
 }

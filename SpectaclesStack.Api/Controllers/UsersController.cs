@@ -37,88 +37,144 @@ namespace spectaclesStackServer.Controllers
         [ProducesResponseType(200, Type = typeof(Users))]
         [ProducesResponseType(400)]
         public IActionResult GetUsers(int userId)
+      {
+        try
         {
             if (!userRepository.UserExists(userId))
+            {
                 return NotFound();
-            
+            }
+
             var user = userRepository.GetUser(userId);
 
+            if (user == null)
+            {
+                return NotFound(); // If user not found, return NotFound
+            }
+
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             return Ok(user);
         }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging purposes
+            Console.WriteLine($"An error occurred: {ex.Message}");
+
+            // Return a generic error message
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+      }
+
 
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateUser([FromBody] Users createUser)
+       public IActionResult CreateUser([FromBody] Users createUser)
+    {
+        try
         {
-            createUser.DateCreated = DateTime.UtcNow;
-            
             if (createUser == null)
-                return BadRequest(ModelState);
-
-            var user = userRepository.GetUsers()
-                .Where(u => u.UserName == createUser.UserName)
-                .FirstOrDefault();
-
-             if (user != null)
             {
-                return Ok(user);
+                return BadRequest("User data is null.");
+            }
+
+            createUser.DateCreated = DateTime.UtcNow;
+
+            var existingUser = userRepository.GetUsers()
+                .FirstOrDefault(u => u.UserName == createUser.UserName);
+
+            if (existingUser != null)
+            {
+                return Conflict("User already exists."); // Return 409 Conflict if user already exists
             }
 
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             if (!userRepository.CreateUser(createUser))
             {
-                ModelState.AddModelError("", "Something went wrong while saving");
+                ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
             }
-            
-            var newUser = userRepository.GetUser(createUser.UserId); 
 
+            var newUser = userRepository.GetUser(createUser.UserId);
             return Ok(newUser);
         }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging purposes
+            Console.WriteLine($"An error occurred: {ex.Message}");
+
+            // Return a generic error message
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
 
         [HttpPut("{userId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public IActionResult UpdateUser(int userId, [FromBody] Users updatedUser)
+    {
+        try
         {
-            updatedUser.DateCreated = DateTime.UtcNow;
-
             if (updatedUser == null)
-                return BadRequest(ModelState);
+            {
+                return BadRequest("Updated user data is null.");
+            }
 
             if (userId != updatedUser.UserId)
+            {
+                ModelState.AddModelError("", "User ID in the URL does not match the ID in the request body.");
                 return BadRequest(ModelState);
+            }
 
             if (!userRepository.UserExists(userId))
+            {
                 return NotFound();
+            }
 
             if (!ModelState.IsValid)
-                return BadRequest();
-
-            var userMap = updatedUser;
-
-            if (!userRepository.UpdateUser(userMap))
             {
-                ModelState.AddModelError("", "Something went wrong updating user");
+                return BadRequest(ModelState);
+            }
+
+            updatedUser.DateCreated = DateTime.UtcNow;
+
+            if (!userRepository.UpdateUser(updatedUser))
+            {
+                ModelState.AddModelError("", "Something went wrong updating the user.");
                 return StatusCode(500, ModelState);
             }
 
             return NoContent();
         }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging purposes
+            Console.WriteLine($"An error occurred: {ex.Message}");
+
+            // Return a generic error message
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
 
         [HttpDelete("{UserId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult DeleteUser(int userId)
-        {   
+       public IActionResult DeleteUser(int userId)
+    {
+        try
+        {
             if (!userRepository.UserExists(userId))
             {
                 return NotFound();
@@ -126,16 +182,34 @@ namespace spectaclesStackServer.Controllers
 
             var userToDelete = userRepository.GetUser(userId);
 
+            if (userToDelete == null)
+            {
+                return NotFound(); // If user not found, return NotFound
+            }
+
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             if (!userRepository.DeleteUser(userToDelete))
             {
-                ModelState.AddModelError("", "Something went wrong deleting user");
+                ModelState.AddModelError("", "Something went wrong deleting the user.");
+                return StatusCode(500, ModelState);
             }
 
             return NoContent();
         }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging purposes
+            Console.WriteLine($"An error occurred: {ex.Message}");
+
+            // Return a generic error message
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+
 
     }
 }
