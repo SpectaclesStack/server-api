@@ -112,29 +112,5 @@ namespace spectaclesStackServer.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{questionId}")]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-        public IActionResult DeleteQuestion(int questionId)
-        {
-            if (!questionsRepository.QuestionExists(questionId))
-            {
-                return NotFound();
-            }
-
-            var questionToDelete = questionsRepository.GetQuestion(questionId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!questionsRepository.DeleteQuestion(questionToDelete))
-            {
-                ModelState.AddModelError("", "Something went wrong deleting question");
-            }
-
-            return NoContent();
-        }
-
     }
 }

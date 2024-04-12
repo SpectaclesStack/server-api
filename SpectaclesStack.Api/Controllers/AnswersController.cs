@@ -112,30 +112,6 @@ namespace spectaclesStackServer.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{AnswerId}")]
-        [ProducesResponseType(400)]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-        public IActionResult DeleteAnswer(int answerId)
-        {
-            if (!answerRepository.AnswerExists(answerId))
-            {
-                return NotFound();
-            }
-
-            var answerToDelete = answerRepository.GetAnswer(answerId);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (!answerRepository.DeleteAnswer(answerToDelete))
-            {
-                ModelState.AddModelError("", "Something went wrong deleting the answer");
-            }
-
-            return NoContent();
-        }
-
     }
 }
 
